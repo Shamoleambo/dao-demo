@@ -37,8 +37,12 @@ public class Program {
 		allSellers.forEach(sel -> {
 			System.out.println(sel);
 		});
-		allSellers2.forEach(s -> System.out.println(s));
-
+		
+		System.out.println();
+		System.out.println("*** Test 5 - update: ***");
+		seller = sellerDao.findById(1);
+		seller.setName("Manolo Testudo");
+		sellerDao.update(seller);
 	}
 
 }
