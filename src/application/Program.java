@@ -8,8 +8,8 @@ public class Program {
 
 	public static void main(String[] args) {
 		DepartmentDao depDao = DaoFactory.createDepartmentDao();
-		Department newDep = new Department(1, "Amor");
-		depDao.insert(newDep);
+		Department dep = depDao.findById(1);
+		System.out.println(dep);
 	}
 
 }
