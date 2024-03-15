@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import db.DB;
@@ -27,11 +28,11 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 			st = this.conn.prepareStatement("INSERT INTO department (Name) VALUES (?)",
 					Statement.RETURN_GENERATED_KEYS);
 			st.setString(1, obj.getName());
-			
+
 			int rowsAffected = st.executeUpdate();
-			if(rowsAffected > 0) {
+			if (rowsAffected > 0) {
 				ResultSet rs = st.getGeneratedKeys();
-				if(rs.next()) {
+				if (rs.next()) {
 					int id = rs.getInt(1);
 					obj.setId(id);
 				}
@@ -61,14 +62,14 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 	public Department findById(Integer id) {
 		PreparedStatement st = null;
 		ResultSet rs = null;
-		
+
 		try {
 			st = this.conn.prepareStatement("SELECT department.* FROM department WHERE department.Id = ?");
 			st.setInt(1, id);
 			rs = st.executeQuery();
-			
+
 			Department dep = new Department();
-			if(rs.next()) {
+			if (rs.next()) {
 				dep.setId(rs.getInt("Id"));
 				dep.setName(rs.getString("Name"));
 				return dep;
@@ -79,13 +80,30 @@ public class DepartmentDaoJDBC implements DepartmentDao {
 		} finally {
 			DB.closeStatement(st);
 		}
-		
+
 	}
 
 	@Override
 	public List<Department> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		List<Department> deps = new ArrayList<Department>();
+		try {
+			st = this.conn.prepareStatement("SELECT department.Id, department.Name AS DepName FROM department");
+			rs = st.executeQuery();
+
+			while (rs.next()) {
+				Department dep = new Department(rs.getInt("Id"), rs.getString("DepName"));
+				deps.add(dep);
+			}
+			return deps;
+
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
 	}
 
 }
